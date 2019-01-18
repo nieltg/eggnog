@@ -1,0 +1,17 @@
+version: '3'
+services:
+  mq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - '15672:15672'
+    healthcheck:
+      timeout: 5s
+      interval: 5s
+      retries: 5
+      test: ["CMD", "rabbitmqctl", "status"]
+  worker:
+    build: worker
+    environment:
+      - 'AMQP_URL=amqp://guest:guest@mq:5672'
+    depends_on:
+      - mq
